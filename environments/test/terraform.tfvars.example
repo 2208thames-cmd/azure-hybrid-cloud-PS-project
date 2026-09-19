@@ -1,0 +1,12 @@
+# Copy this file to terraform.tfvars and adjust as needed.
+
+project     = "hybridcloud"
+environment = "test"
+location    = "eastus"
+
+tags = {
+  project     = "azure-hybrid-cloud"
+  environment = "test"
+  managed_by  = "terraform"
+  owner       = "christopher"
+}
