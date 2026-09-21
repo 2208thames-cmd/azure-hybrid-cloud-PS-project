@@ -163,3 +163,19 @@ After a supported VM or private endpoint is available:
 8. Confirm the session and traffic counters in Azure Portal.
 9. Destroy only the temporary test target after validation.
 10. Run `terraform plan` again to confirm no unintended changes remain.
+
+## 11. Environment Approval Limitation
+
+GitHub's required-reviewer protection rule for deployment environments requires a
+supported paid plan tier for private repositories. This repository currently uses a
+manual `confirmation` input in `.github/workflows/terraform-apply.yml` as a
+compensating control:
+
+- `APPLY` allows the job to continue.
+- `CANCEL` skips the apply job.
+- The workflow applies the exact reviewed plan artifact and does not generate a new plan.
+
+If the repository is later made public or upgraded to a plan that supports required
+reviewers, configure environment-level approvals for `dev`, `test`, and especially
+`prod`. The partial `dev` environment created during the initial configuration attempt
+should be removed from the repository's GitHub Settings if it is no longer needed.
