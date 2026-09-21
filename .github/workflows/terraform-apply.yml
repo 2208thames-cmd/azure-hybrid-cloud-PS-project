@@ -12,6 +12,10 @@ on:
         description: GitHub Actions run ID that produced the reviewed plan
         required: true
         type: string
+      source_commit:
+        description: Exact commit SHA recorded by the plan workflow
+        required: true
+        type: string
       confirmation:
         description: Type APPLY to authorize applying the exact reviewed plan
         required: true
@@ -46,10 +50,16 @@ jobs:
         working-directory: environments/${{ inputs.environment }}
 
     steps:
-      - name: Check out main
+      - name: Check out exact plan source commit
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ inputs.source_commit }}
+
+      - name: Verify checked-out commit
+        shell: bash
+        run: |
+          actual_commit="$(git rev-parse HEAD)"
+          test "$actual_commit" = "${{ inputs.source_commit }}"
 
       - name: Download exact reviewed plan
         uses: actions/download-artifact@v4
@@ -58,6 +68,12 @@ jobs:
           path: environments/${{ inputs.environment }}
           github-token: ${{ github.token }}
           run-id: ${{ inputs.plan_run_id }}
+
+      - name: Verify plan metadata
+        shell: bash
+        run: |
+          test "$(grep '^environment=' plan-metadata.txt | cut -d= -f2)" = "${{ inputs.environment }}"
+          test "$(grep '^source_commit=' plan-metadata.txt | cut -d= -f2)" = "${{ inputs.source_commit }}"
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2

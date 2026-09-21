@@ -171,6 +171,7 @@ GitHub Actions provides:
 - Manual environment plans for dev, test, and prod using OIDC
 - Saved binary Terraform plan artifacts with seven-day retention
 - Plan text written to the GitHub Actions job summary
+- Apply checks out and verifies the exact source commit recorded with the plan
 - Concurrency groups that cancel superseded plans and prevent overlapping applies
 - Explicit GitHub environment assignments for dev, test, and prod
 - An apply workflow that downloads and applies the exact saved plan artifact
@@ -178,8 +179,9 @@ GitHub Actions provides:
 - Separate state access through `Storage Blob Data Contributor`
 
 Configure required reviewers on the GitHub `dev`, `test`, and `prod` environments.
-The apply workflow should be run only with the environment and plan run ID that were
-reviewed. It never generates a new plan during apply.
+The apply workflow should be run only with the environment, plan run ID, and exact
+source commit that were reviewed. It verifies the commit recorded in the plan artifact
+before applying and never generates a new plan during apply.
 
 ## Troubleshooting
 

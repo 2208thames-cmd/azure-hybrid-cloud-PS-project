@@ -67,6 +67,14 @@ jobs:
       - name: Validate Terraform configuration
         run: terraform validate
 
+      - name: Record source commit
+        env:
+          PLAN_ENVIRONMENT: ${{ inputs.environment }}
+          PLAN_SOURCE_REF: ${{ inputs.source_ref }}
+        run: |
+          printf 'environment=%s\nsource_ref=%s\nsource_commit=%s\n' \
+            "$PLAN_ENVIRONMENT" "$PLAN_SOURCE_REF" "$(git rev-parse HEAD)" > plan-metadata.txt
+
       - name: Create saved Terraform plan
         run: terraform plan -input=false -lock-timeout=5m -out=tfplan
 
@@ -83,4 +91,5 @@ jobs:
           path: |
             environments/${{ inputs.environment }}/tfplan
             environments/${{ inputs.environment }}/tfplan.txt
+            environments/${{ inputs.environment }}/plan-metadata.txt
           retention-days: 7
