@@ -1,4 +1,4 @@
-# Recruiter demo
+# Demo Environment
 
 This folder is a sanitized, local-state entry point for reviewing the Terraform design.
 It reuses the shared network module but has no Azure remote backend and no committed
