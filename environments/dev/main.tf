@@ -13,6 +13,15 @@ module "network" {
   enable_p2s_vpn      = true
 }
 
+module "monitoring" {
+  source              = "../../modules/monitoring"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = var.location
+  project             = var.project
+  environment         = var.environment
+  tags                = var.tags
+}
+
 # --- Remaining modules will be wired in here as we build each piece ---
 #
 # module "governance" {
@@ -21,10 +30,6 @@ module "network" {
 #
 # module "identity" {
 #   source = "../../modules/identity"
-# }
-#
-# module "monitoring" {
-#   source = "../../modules/monitoring"
 # }
 #
 # module "backup" {

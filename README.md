@@ -23,7 +23,7 @@ identity, monitoring, backup, and a future CI/CD workflow.
 │   ├── network/            # Virtual WAN, hub, spokes, private endpoints
 │   ├── governance/          # Azure Policy, RBAC, Defender for Cloud
 │   ├── identity/            # Conditional Access, PIM (via azuread provider)
-│   ├── monitoring/          # Log Analytics, alerts, diagnostic settings
+│   ├── monitoring/          # Log Analytics workspace; alerts follow
 │   └── backup/              # Recovery Services vault + backup policy
 ├── demo/                   # Sanitized recruiter demo with local state
 │   ├── main.tf
