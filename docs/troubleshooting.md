@@ -166,16 +166,18 @@ After a supported VM or private endpoint is available:
 
 ## 11. Environment Approval Limitation
 
-GitHub's required-reviewer protection rule for deployment environments requires a
-supported paid plan tier for private repositories. This repository currently uses a
-manual `confirmation` input in `.github/workflows/terraform-apply.yml` as a
-compensating control:
+GitHub's required-reviewer protection rule for deployment environments is not available
+to private repositories on GitHub Free, Pro, or Team; private repositories require an
+Enterprise plan for that control. Main branch protection is also unavailable on this
+repository's current plan. This repository currently uses a manual `confirmation` input
+in `.github/workflows/terraform-apply.yml` as a compensating control:
 
 - `APPLY` allows the job to continue.
 - `CANCEL` skips the apply job.
 - The workflow applies the exact reviewed plan artifact and does not generate a new plan.
 
-If the repository is later made public or upgraded to a plan that supports required
-reviewers, configure environment-level approvals for `dev`, `test`, and especially
-`prod`. The partial `dev` environment created during the initial configuration attempt
-should be removed from the repository's GitHub Settings if it is no longer needed.
+The repository should not be presented as having independently approval-gated production
+deployment. If the repository later moves to an Enterprise plan, or its visibility and
+configuration change to support the required controls, configure branch protection and
+environment-level approvals for `test` and especially `prod`. The partial `dev` environment
+created during the initial configuration attempt was removed.

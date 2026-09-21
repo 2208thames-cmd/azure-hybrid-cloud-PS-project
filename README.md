@@ -179,13 +179,16 @@ GitHub Actions provides:
 - Separate state access through `Storage Blob Data Contributor`
 
 Manual apply confirmation is implemented through the required `APPLY` or `CANCEL`
-workflow input. GitHub-enforced required reviewers are unavailable on the current plan
-for this private repository. The apply workflow should be run only with the environment,
-plan run ID, and exact source commit that were reviewed. It verifies the commit recorded
-in the plan artifact before applying and never generates a new plan during apply.
+workflow input. Main branch protection and GitHub Environment required reviewers are not
+enabled because this private repository's current plan does not provide those controls.
+Private repositories require an Enterprise plan for GitHub-enforced environment reviewers.
+The apply workflow should be run only with the environment, plan run ID, and exact source
+commit that were reviewed. It verifies the commit recorded in the plan artifact before
+applying and never generates a new plan during apply.
 
-Approval-gated production apply remains pending a GitHub plan upgrade or a repository
-configuration that supports environment-level required reviewers.
+The repository should not be presented as having independently approval-gated production
+deployment. That remains pending an Enterprise plan or a repository visibility/configuration
+change that supports the required controls.
 
 ## Troubleshooting
 
@@ -196,8 +199,8 @@ See [docs/troubleshooting.md](docs/troubleshooting.md) for Azure VPN Client diag
 - Add a supported private workload target for packet-level VPN validation
 - Add private endpoint resources and private DNS integration
 - Restrict backend network access after all required identities are known
-- Enable GitHub-enforced approval gates for production apply after the repository plan
-  or visibility supports required reviewers
+- Enable GitHub-enforced branch and environment approval gates for production apply after
+  moving to an Enterprise plan or changing repository visibility/configuration
 - Add diagnostic settings and alert rules to the monitoring module
 - Add VM backup association when a protected VM exists
 - Add CAF and Well-Architected Framework mapping
