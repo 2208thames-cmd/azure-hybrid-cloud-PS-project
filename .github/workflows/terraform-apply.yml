@@ -12,6 +12,11 @@ on:
         description: GitHub Actions run ID that produced the reviewed plan
         required: true
         type: string
+      confirmation:
+        description: Type APPLY to authorize applying the exact reviewed plan
+        required: true
+        type: choice
+        options: [CANCEL, APPLY]
 
 permissions:
   contents: read
@@ -25,6 +30,7 @@ concurrency:
 jobs:
   apply:
     name: Apply ${{ inputs.environment }}
+    if: ${{ inputs.confirmation == 'APPLY' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: ${{ inputs.environment }}
