@@ -21,7 +21,6 @@ module "monitoring" {
   environment         = var.environment
   tags                = var.tags
 }
-
 module "governance" {
   source            = "../../modules/governance"
   resource_group_id = azurerm_resource_group.main.id
@@ -37,8 +36,12 @@ module "identity" {
   tags                = var.tags
 }
 
-# --- Remaining modules will be wired in here as we build each piece ---
-#
-# module "backup" {
-#   source = "../../modules/backup"
-# }
+module "backup" {
+  source              = "../../modules/backup"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = var.location
+  project             = var.project
+  environment         = var.environment
+  tags                = var.tags
+}
+
