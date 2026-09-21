@@ -173,15 +173,19 @@ GitHub Actions provides:
 - Plan text written to the GitHub Actions job summary
 - Apply checks out and verifies the exact source commit recorded with the plan
 - Concurrency groups that cancel superseded plans and prevent overlapping applies
-- Explicit GitHub environment assignments for dev, test, and prod
+- Manual environment selection for dev, test, and prod
 - An apply workflow that downloads and applies the exact saved plan artifact
 - Entra federation restricted to the repository's main branch
 - Separate state access through `Storage Blob Data Contributor`
 
-Configure required reviewers on the GitHub `dev`, `test`, and `prod` environments.
-The apply workflow should be run only with the environment, plan run ID, and exact
-source commit that were reviewed. It verifies the commit recorded in the plan artifact
-before applying and never generates a new plan during apply.
+Manual apply confirmation is implemented through the required `APPLY` or `CANCEL`
+workflow input. GitHub-enforced required reviewers are unavailable on the current plan
+for this private repository. The apply workflow should be run only with the environment,
+plan run ID, and exact source commit that were reviewed. It verifies the commit recorded
+in the plan artifact before applying and never generates a new plan during apply.
+
+Approval-gated production apply remains pending a GitHub plan upgrade or a repository
+configuration that supports environment-level required reviewers.
 
 ## Troubleshooting
 
@@ -192,7 +196,8 @@ See [docs/troubleshooting.md](docs/troubleshooting.md) for Azure VPN Client diag
 - Add a supported private workload target for packet-level VPN validation
 - Add private endpoint resources and private DNS integration
 - Restrict backend network access after all required identities are known
-- Add approval-gated apply workflows for dev, test, and prod
+- Enable GitHub-enforced approval gates for production apply after the repository plan
+  or visibility supports required reviewers
 - Add diagnostic settings and alert rules to the monitoring module
 - Add VM backup association when a protected VM exists
 - Add CAF and Well-Architected Framework mapping
