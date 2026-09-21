@@ -43,9 +43,9 @@ azure-hybrid-cloud-project/
 ├── .github/
 │   └── workflows/
 │       ├── terraform-demo.yml
-│       ├── terraform-plan-dev.yml
-│       ├── terraform-plan-test.yml
-│       └── terraform-plan-prod.yml
+│       ├── terraform-quality.yml
+│       ├── terraform-plan.yml
+│       └── terraform-apply.yml
 ├── demo/                         # Local-state, sanitized validation entry point
 ├── docs/
 │   ├── troubleshooting.md
@@ -166,13 +166,20 @@ End-to-end packet flow requires an Azure-side private target, such as a VM or pr
 
 GitHub Actions provides:
 
-- Demo formatting, backend-free initialization, and validation checks
-- Plan-only OIDC workflows for dev, test, and prod
+- Pull request and main-branch quality checks with `terraform fmt -check`,
+  backend-free validation, TFLint, and advisory Checkov scanning
+- Manual environment plans for dev, test, and prod using OIDC
+- Saved binary Terraform plan artifacts with seven-day retention
+- Plan text written to the GitHub Actions job summary
+- Concurrency groups that cancel superseded plans and prevent overlapping applies
+- Explicit GitHub environment assignments for dev, test, and prod
+- An apply workflow that downloads and applies the exact saved plan artifact
 - Entra federation restricted to the repository's main branch
 - Separate state access through `Storage Blob Data Contributor`
-- No automatic apply or destroy workflows
 
-Production deployment automation should add explicit environment approvals before any apply operation.
+Configure required reviewers on the GitHub `dev`, `test`, and `prod` environments.
+The apply workflow should be run only with the environment and plan run ID that were
+reviewed. It never generates a new plan during apply.
 
 ## Troubleshooting
 

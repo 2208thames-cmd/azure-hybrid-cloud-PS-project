@@ -25,8 +25,7 @@ This demo is separate from the real `dev`, `test`, and `prod` remote-state backe
 
 ## GitHub Actions
 
-The repository workflow runs `terraform fmt -check`, initializes without a remote
-backend, and runs `terraform validate` for this demo on pushes and pull requests. It
-does not need Azure credentials and does not run `apply`, `destroy`, or an Azure-backed
-plan. A future deployment workflow can add an OIDC identity after the real Azure
-deployment process is ready.
+The repository quality workflow runs `terraform fmt -check`, initializes without a
+remote backend, runs `terraform validate`, TFLint, and advisory Checkov scanning on
+pushes and pull requests. It does not need Azure credentials and does not run `apply`,
+`destroy`, or an Azure-backed plan.
