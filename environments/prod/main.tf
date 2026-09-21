@@ -22,11 +22,13 @@ module "monitoring" {
   tags                = var.tags
 }
 
+module "governance" {
+  source            = "../../modules/governance"
+  resource_group_id = azurerm_resource_group.main.id
+  environment       = var.environment
+}
+
 # --- Remaining modules will be wired in here as we build each piece ---
-#
-# module "governance" {
-#   source = "../../modules/governance"
-# }
 #
 # module "identity" {
 #   source = "../../modules/identity"

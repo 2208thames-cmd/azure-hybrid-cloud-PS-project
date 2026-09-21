@@ -21,7 +21,7 @@ identity, monitoring, backup, and a future CI/CD workflow.
 │       └── terraform.tfvars.example
 ├── modules/
 │   ├── network/            # Virtual WAN, hub, spokes, private endpoints
-│   ├── governance/          # Azure Policy, RBAC, Defender for Cloud
+│   ├── governance/          # Audit-only environment tag policy
 │   ├── identity/            # Conditional Access, PIM (via azuread provider)
 │   ├── monitoring/          # Log Analytics workspace; alerts follow
 │   └── backup/              # Recovery Services vault + backup policy
