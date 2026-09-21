@@ -39,10 +39,10 @@ resource "azurerm_point_to_site_vpn_gateway" "main" {
 # Using Azure AD (Entra ID) authentication ties this directly back into the
 # identity module, which is one of the recruiter's questions.
 resource "azurerm_vpn_server_configuration" "main" {
-  count               = var.enable_p2s_vpn ? 1 : 0
-  name                = "vpnserverconfig-${var.project}"
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  count                    = var.enable_p2s_vpn ? 1 : 0
+  name                     = "vpnserverconfig-${var.project}"
+  resource_group_name      = var.resource_group_name
+  location                 = var.location
   vpn_authentication_types = ["AAD"]
 
   azure_active_directory_authentication {
