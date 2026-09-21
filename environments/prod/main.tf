@@ -28,11 +28,16 @@ module "governance" {
   environment       = var.environment
 }
 
+module "identity" {
+  source              = "../../modules/identity"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = var.location
+  project             = var.project
+  environment         = var.environment
+  tags                = var.tags
+}
+
 # --- Remaining modules will be wired in here as we build each piece ---
-#
-# module "identity" {
-#   source = "../../modules/identity"
-# }
 #
 # module "backup" {
 #   source = "../../modules/backup"

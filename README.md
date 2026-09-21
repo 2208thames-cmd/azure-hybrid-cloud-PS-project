@@ -22,7 +22,7 @@ identity, monitoring, backup, and a future CI/CD workflow.
 ├── modules/
 │   ├── network/            # Virtual WAN, hub, spokes, private endpoints
 │   ├── governance/          # Audit-only environment tag policy
-│   ├── identity/            # Conditional Access, PIM (via azuread provider)
+│   ├── identity/            # Per-environment user-assigned managed identity
 │   ├── monitoring/          # Log Analytics workspace; alerts follow
 │   └── backup/              # Recovery Services vault + backup policy
 ├── demo/                   # Sanitized recruiter demo with local state
