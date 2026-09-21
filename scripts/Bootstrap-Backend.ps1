@@ -13,7 +13,7 @@
     3-24 characters, letters and numbers only.
 
 .EXAMPLE
-    ./Bootstrap-Backend.ps1 -Suffix cjt01
+    .\Bootstrap-Backend.ps1 -Suffix cjt01
 #>
 
 [CmdletBinding()]
