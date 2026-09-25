@@ -36,7 +36,7 @@ jobs:
     name: Apply ${{ inputs.environment }}
     if: ${{ inputs.confirmation == 'APPLY' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     environment: ${{ inputs.environment }}
     env:
       ARM_USE_OIDC: true
