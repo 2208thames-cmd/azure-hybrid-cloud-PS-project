@@ -7,6 +7,6 @@ terraform {
     container_name       = "tfstate"
     key                  = "prod.terraform.tfstate"
     use_azuread_auth     = true
-    use_cli              = true
+    use_oidc             = true
   }
 }
