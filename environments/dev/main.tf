@@ -1,3 +1,8 @@
+import {
+  to = module.network.azurerm_vpn_gateway.main[0]
+  id = "/subscriptions/2432a69d-15e9-46e8-ad46-0a7c9ec9a704/resourceGroups/rg-hybridcloud-dev/providers/Microsoft.Network/vpnGateways/vpngw-hybridcloud"
+}
+
 resource "azurerm_resource_group" "main" {
   name     = "rg-${var.project}-${var.environment}"
   location = var.location
