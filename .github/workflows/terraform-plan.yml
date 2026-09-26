@@ -19,8 +19,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: terraform-plan-${{ inputs.environment }}
-  cancel-in-progress: true
+  group: terraform-state-${{ inputs.environment }}
+  cancel-in-progress: false
 
 jobs:
   plan:

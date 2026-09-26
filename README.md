@@ -161,9 +161,9 @@ See [docs/validation/test.md](docs/validation/test.md) for the recorded evidence
 
 End-to-end packet flow requires an Azure-side private target, such as a VM or private endpoint. The temporary VM attempt was removed after East US capacity, SKU availability, and quota restrictions prevented deployment. The P2S control-plane result is confirmed; workload traffic validation is documented as future work.
 
-- Pull request and main-branch quality checks with `terraform fmt -check`,
-- Automatic read-only Terraform plan posted as a PR comment for changes under
-  `environments/dev/**` or `modules/**`, using the `dev` OIDC credential and never applying
+- Pull requests and pushes to `main` run formatting, backend-free validation for `demo`,
+  `dev`, `test`, and `prod`, TFLint, advisory Checkov, and Trivy scans. Cloud-backed plans
+  remain manual so pull-request code does not run with Azure credentials
 - Scheduled daily drift detection for `dev`, `test`, and `prod` that opens or updates a
   GitHub issue when the live environment differs from configuration, and auto-closes it
   once reconciled
@@ -172,10 +172,14 @@ End-to-end packet flow requires an Azure-side private target, such as a VM or pr
 - Optional SonarCloud analysis when the repository variable `SONAR_ORGANIZATION`,
   repository variable `SONAR_PROJECT_KEY`, and secret `SONAR_TOKEN` are configured
 - Manual environment plans for dev, test, and prod using OIDC
+- Production apply and destroy require a successful Terraform Quality run for the exact
+  source commit, require the workflow definition from `main`, and verify the matching
+  successful plan workflow run/artifact before execution
 - Saved binary Terraform plan artifacts with seven-day retention
 - Plan text written to the GitHub Actions job summary
 - Apply checks out and verifies the exact source commit recorded with the plan
-- Concurrency groups that cancel superseded plans and prevent overlapping applies
+- Shared per-environment concurrency groups serialize plans, applies, drift checks, and
+  destroys so workflows cannot operate on the same state concurrently
 - Manual environment selection for dev, test, and prod
 - An apply workflow that downloads and applies the exact saved plan artifact
 - Separate manual destroy-plan and destroy-apply workflows using reviewed artifacts

@@ -2,18 +2,8 @@ name: Terraform Quality
 
 on:
   pull_request:
-    paths:
-      - "environments/**"
-      - "modules/**"
-      - "demo/**"
-      - ".github/workflows/**"
   push:
     branches: [main]
-    paths:
-      - "environments/**"
-      - "modules/**"
-      - "demo/**"
-      - ".github/workflows/**"
 
 permissions:
   contents: read
