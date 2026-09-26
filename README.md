@@ -46,6 +46,13 @@ azure-hybrid-cloud-project/
 │       ├── terraform-plan.yml
 │       ├── terraform-apply.yml
 │       ├── terraform-destroy-plan.yml
+│       └── terraform-destroy-apply.yml
+├── demo/                         # Local-state, sanitized validation entry point
+├── docs/
+│   ├── troubleshooting.md
+│   └── validation/
+│       └── test.md
+├── environments/
 │   ├── dev/                      # Development root module and backend
 │   ├── test/                     # Test root module and backend
 │   └── prod/                     # Production root module and backend
