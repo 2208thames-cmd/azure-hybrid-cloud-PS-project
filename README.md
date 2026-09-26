@@ -19,14 +19,14 @@ flowchart LR
     IaC --> Data
 ```
 
-The repository also contains an architecture-diagram placeholder for a future Draw.io or PNG deliverable. The Mermaid diagram above reflects the currently implemented topology.
+The Mermaid diagram above reflects the currently implemented topology. A finalized Draw.io or PNG diagram remains a future enhancement.
 
 ## Overview
 
 This project demonstrates a reusable Azure infrastructure platform built with Terraform:
 
 - Azure Virtual WAN and Virtual Hub for centralized connectivity
-- Application and data spoke VNets with subnet-level NSG segmentation
+- Application and data spoke workload subnets with NSG protection
 - Entra ID-authenticated P2S VPN for administrator access
 - Dedicated subnet reserved for future private endpoints
 - Separate dev, test, and prod environments with isolated Terraform state
@@ -44,13 +44,8 @@ azure-hybrid-cloud-project/
 │   └── workflows/
 │       ├── terraform-quality.yml
 │       ├── terraform-plan.yml
-│       └── terraform-apply.yml
-├── demo/                         # Local-state, sanitized validation entry point
-├── docs/
-│   ├── troubleshooting.md
-│   └── validation/
-│       └── test.md
-├── environments/
+│       ├── terraform-apply.yml
+│       ├── terraform-destroy-plan.yml
 │   ├── dev/                      # Development root module and backend
 │   ├── test/                     # Test root module and backend
 │   └── prod/                     # Production root module and backend
@@ -99,12 +94,6 @@ All three Terraform state storage accounts use Azure Blob Storage with:
 - Blob soft delete enabled for 30 days
 - Container soft delete enabled for 30 days
 - Change feed enabled
-- A dedicated `tfstate` container
-
-The AzureRM backend provides state locking through Azure Blob leases. The separate state keys and locking prevent concurrent Terraform operations from corrupting state. State files must never be edited manually or committed to Git.
-
-## Deployment
-
 Authenticate to Azure in PowerShell:
 
 ```powershell
@@ -116,24 +105,10 @@ Create backend storage when setting up a new environment:
 
 ```powershell
 .\scripts\Bootstrap-Backend.ps1 -Suffix <suffix>
-```
 
 Deploy one environment at a time. Start with `dev`, then promote through `test` and `prod` after reviewing each plan:
-
 ```powershell
-Set-Location .\environments\dev
 Copy-Item terraform.tfvars.example terraform.tfvars
-terraform init -reconfigure
-terraform validate
-terraform plan
-terraform apply
-```
-
-Use the matching environment directory and backend for `test` or `prod`. Never run an apply from the wrong environment directory, and never commit `terraform.tfvars`, state files, credentials, or storage keys.
-
-## Testing
-
-### Terraform Checks
 
 The repository has passed formatting, initialization, validation, and plan checks for the real environments. The local commands are:
 
@@ -161,15 +136,7 @@ See [docs/validation/test.md](docs/validation/test.md) for the recorded evidence
 
 End-to-end packet flow requires an Azure-side private target, such as a VM or private endpoint. The temporary VM attempt was removed after East US capacity, SKU availability, and quota restrictions prevented deployment. The P2S control-plane result is confirmed; workload traffic validation is documented as future work.
 
-## CI/CD
-
-GitHub Actions provides:
-
 - Pull request and main-branch quality checks with `terraform fmt -check`,
-  backend-free validation, TFLint, advisory Checkov scanning, and Trivy
-  filesystem/IaC scanning for high and critical findings
-- Backend-free `terraform init` and `terraform validate` checks for all three
-  real environments: `dev`, `test`, and `prod`
 - Optional SonarCloud analysis when the repository variable `SONAR_ORGANIZATION`,
   repository variable `SONAR_PROJECT_KEY`, and secret `SONAR_TOKEN` are configured
 - Manual environment plans for dev, test, and prod using OIDC

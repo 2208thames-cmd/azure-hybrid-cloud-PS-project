@@ -6,4 +6,3 @@ VM backup policy. The policy retains daily, weekly, monthly, and yearly recovery
 The VM association is intentionally not included yet because the project does not define
 an Azure VM. Once a VM exists, add an `azurerm_backup_protected_vm` resource using the
 vault and policy outputs.
-# backup module — files added in a later build step

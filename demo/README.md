@@ -11,10 +11,11 @@ terraform init
 terraform validate
 ```
 
-A real `terraform plan` requires Azure authentication and an Azure subscription because
-Terraform must resolve the Azure provider and plan Azure resources. If you have your own
-sandbox subscription, copy `terraform.tfvars.example` to `terraform.tfvars`, sign in with
-Azure CLI or PowerShell, and run:
+A real `terraform plan` requires a valid AzureRM provider configuration, Azure
+authentication, an Azure subscription, and sufficient permission to read or plan the
+represented resources. If you have your own sandbox subscription, copy
+`terraform.tfvars.example` to `terraform.tfvars`, sign in with Azure CLI or PowerShell,
+and run:
 
 ```powershell
 terraform plan
