@@ -101,6 +101,13 @@ jobs:
           script: |
             const environment = '${{ inputs.environment }}';
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            for (const name of ['terraform-failure', environment]) {
+              try {
+                await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+              } catch {
+                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+              }
+            }
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,

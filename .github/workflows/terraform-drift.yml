@@ -94,6 +94,13 @@ jobs:
             const summary = fs.readFileSync('environments/' + environment + '/drift-summary.txt', 'utf8').slice(0, 60000);
             const title = `Terraform drift detected: ${environment}`;
             const body = `Scheduled drift detection found differences between Terraform configuration and the live \`${environment}\` environment.\n\nReview and reconcile with a reviewed plan and apply, or update the configuration to match reality.\n\n\`\`\`\n${summary}\n\`\`\``;
+            for (const name of ['terraform-drift', environment]) {
+              try {
+                await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+              } catch {
+                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+              }
+            }
             const existing = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
