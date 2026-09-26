@@ -98,14 +98,14 @@ jobs:
               try {
                 await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
               } catch {
-                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color: 'd73a4a' });
               }
             }
             const existing = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
-              labels: ['terraform-drift', environment],
+              labels: `terraform-drift,${environment}`,
             });
             if (existing.data.length > 0) {
               await github.rest.issues.update({
@@ -120,7 +120,7 @@ jobs:
                 repo: context.repo.repo,
                 title,
                 body,
-                labels: ['terraform-drift', environment],
+                labels: `terraform-drift,${environment}`,
               });
             }
 
@@ -134,7 +134,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
-              labels: ['terraform-drift', environment],
+              labels: `terraform-drift,${environment}`,
             });
             for (const issue of existing.data) {
               await github.rest.issues.update({
