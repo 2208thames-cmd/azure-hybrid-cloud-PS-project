@@ -26,6 +26,7 @@ permissions:
   contents: read
   id-token: write
   actions: read
+  issues: write
 
 concurrency:
   group: terraform-destroy-apply-${{ inputs.environment }}
@@ -93,3 +94,18 @@ jobs:
 
       - name: Apply exact reviewed destroy plan
         run: terraform apply -input=false tfplan
+
+      - name: Open failure notification issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const environment = '${{ inputs.environment }}';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Terraform destroy failed: ${environment}`,
+              body: `The Terraform Destroy Apply workflow failed for \`${environment}\` at commit \`${{ inputs.source_commit }}\`.\n\nRun: ${runUrl}\n\nCheck for a stale state lock and partially destroyed resources before retrying.`,
+              labels: ['terraform-failure', environment],
+            });

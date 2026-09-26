@@ -162,6 +162,13 @@ See [docs/validation/test.md](docs/validation/test.md) for the recorded evidence
 End-to-end packet flow requires an Azure-side private target, such as a VM or private endpoint. The temporary VM attempt was removed after East US capacity, SKU availability, and quota restrictions prevented deployment. The P2S control-plane result is confirmed; workload traffic validation is documented as future work.
 
 - Pull request and main-branch quality checks with `terraform fmt -check`,
+- Automatic read-only Terraform plan posted as a PR comment for changes under
+  `environments/dev/**` or `modules/**`, using the `dev` OIDC credential and never applying
+- Scheduled daily drift detection for `dev`, `test`, and `prod` that opens or updates a
+  GitHub issue when the live environment differs from configuration, and auto-closes it
+  once reconciled
+- Automatic GitHub issue creation when a `Terraform Apply` or `Terraform Destroy Apply`
+  run fails, linking to the failed run
 - Optional SonarCloud analysis when the repository variable `SONAR_ORGANIZATION`,
   repository variable `SONAR_PROJECT_KEY`, and secret `SONAR_TOKEN` are configured
 - Manual environment plans for dev, test, and prod using OIDC
@@ -177,9 +184,12 @@ End-to-end packet flow requires an Azure-side private target, such as a VM or pr
 - Separate state access through `Storage Blob Data Contributor`
 
 Manual apply confirmation is implemented through the required `APPLY` or `CANCEL`
-workflow input. Main branch protection and GitHub Environment required reviewers are not
-enabled because this private repository's current plan does not provide those controls.
-Private repositories require an Enterprise plan for GitHub-enforced environment reviewers.
+workflow input. Main branch protection is not enabled because GitHub only offers branch
+protection rules on private repositories with a Pro, Team, or Enterprise plan; this
+repository is currently on the Free plan. GitHub Environment required reviewers require
+an Enterprise plan for private repositories. Confirmed by attempting to configure branch
+protection through the GitHub API, which returned `403 Upgrade to GitHub Pro or make this
+repository public to enable this feature`.
 The apply workflow should be run only with the environment, plan run ID, and exact source
 commit that were reviewed. It verifies the commit recorded in the plan artifact before
 applying and never generates a new plan during apply.
@@ -189,8 +199,11 @@ successful manual destroy plan, review of its saved artifact, the matching plan 
 and source commit, and an explicit `DESTROY` confirmation in the destroy-apply workflow.
 
 The repository should not be presented as having independently approval-gated production
-deployment. That remains pending an Enterprise plan or a repository visibility/configuration
+deployment. That remains pending a paid GitHub plan or a repository visibility/configuration
 change that supports the required controls.
+
+See [docs/rollback-runbook.md](docs/rollback-runbook.md) for the incident response and
+rollback procedure covering failed applies, failed destroys, and detected drift.
 
 Trivy scans this Terraform repository directly. Cosign is not included yet because this
 repository does not build or publish a container image; Cosign should be added alongside a
@@ -206,7 +219,7 @@ See [docs/troubleshooting.md](docs/troubleshooting.md) for Azure VPN Client diag
 - Add private endpoint resources and private DNS integration
 - Restrict backend network access after all required identities are known
 - Enable GitHub-enforced branch and environment approval gates for production apply after
-  moving to an Enterprise plan or changing repository visibility/configuration
+  upgrading to a paid GitHub plan or changing repository visibility/configuration
 - Add diagnostic settings and alert rules to the monitoring module
 - Add VM backup association when a protected VM exists
 - Add CAF and Well-Architected Framework mapping
