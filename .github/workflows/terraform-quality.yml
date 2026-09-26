@@ -78,3 +78,29 @@ jobs:
             echo "- TFLint: passed"
             echo "- Checkov: completed in advisory mode"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  terraform-validate-environments:
+    name: Validate ${{ matrix.environment }} configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [dev, test, prod]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.5"
+
+      - name: Initialize without a backend
+        working-directory: environments/${{ matrix.environment }}
+        run: terraform init -backend=false -input=false
+
+      - name: Validate Terraform configuration
+        working-directory: environments/${{ matrix.environment }}
+        run: terraform validate
