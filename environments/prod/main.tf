@@ -21,7 +21,6 @@ module "monitoring" {
   environment         = var.environment
   tags                = var.tags
   diagnostic_resource_ids = {
-    virtual_wan     = module.network.virtual_wan_id
     virtual_hub     = module.network.hub_id
     app_vnet        = module.network.app_spoke_vnet_id
     data_vnet       = module.network.data_spoke_vnet_id
