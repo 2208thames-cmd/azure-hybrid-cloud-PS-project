@@ -167,7 +167,10 @@ End-to-end packet flow requires an Azure-side private target, such as a VM or pr
 GitHub Actions provides:
 
 - Pull request and main-branch quality checks with `terraform fmt -check`,
-  backend-free validation, TFLint, and advisory Checkov scanning
+  backend-free validation, TFLint, advisory Checkov scanning, and Trivy
+  filesystem/IaC scanning for high and critical findings
+- Optional SonarCloud analysis when the repository variable `SONAR_ORGANIZATION`,
+  repository variable `SONAR_PROJECT_KEY`, and secret `SONAR_TOKEN` are configured
 - Manual environment plans for dev, test, and prod using OIDC
 - Saved binary Terraform plan artifacts with seven-day retention
 - Plan text written to the GitHub Actions job summary
@@ -189,6 +192,10 @@ applying and never generates a new plan during apply.
 The repository should not be presented as having independently approval-gated production
 deployment. That remains pending an Enterprise plan or a repository visibility/configuration
 change that supports the required controls.
+
+Trivy scans this Terraform repository directly. Cosign is not included yet because this
+repository does not build or publish a container image; Cosign should be added alongside a
+container build workflow so it can sign and verify an actual image digest.
 
 ## Troubleshooting
 
