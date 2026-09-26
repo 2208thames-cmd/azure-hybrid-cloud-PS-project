@@ -14,12 +14,13 @@ module "network" {
 }
 
 module "monitoring" {
-  source              = "../../modules/monitoring"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = var.location
-  project             = var.project
-  environment         = var.environment
-  tags                = var.tags
+  source                           = "../../modules/monitoring"
+  resource_group_name              = azurerm_resource_group.main.name
+  location                         = var.location
+  project                          = var.project
+  environment                      = var.environment
+  tags                             = var.tags
+  enable_subscription_activity_log = true
   diagnostic_resource_ids = {
     virtual_hub     = module.network.hub_id
     app_vnet        = module.network.app_spoke_vnet_id

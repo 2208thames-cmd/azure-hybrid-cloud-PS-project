@@ -35,3 +35,9 @@ variable "diagnostic_resource_ids" {
   type        = map(string)
   default     = {}
 }
+
+variable "enable_subscription_activity_log" {
+  description = "Send subscription Activity Log events to this workspace"
+  type        = bool
+  default     = false
+}

@@ -9,3 +9,7 @@ and metrics from the Virtual Hub, app/data spoke VNets, site-to-site VPN gateway
 point-to-site VPN gateway to the workspace. Azure does not support diagnostic settings
 on the Virtual WAN resource itself. Category discovery is resource-specific, so
 unsupported log categories are not hard-coded.
+
+The `prod` environment additionally sends subscription Activity Log categories to its
+workspace. This captures control-plane operations affecting the Virtual WAN and other
+subscription resources; it is not a substitute for resource diagnostic logs.
