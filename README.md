@@ -169,6 +169,8 @@ GitHub Actions provides:
 - Pull request and main-branch quality checks with `terraform fmt -check`,
   backend-free validation, TFLint, advisory Checkov scanning, and Trivy
   filesystem/IaC scanning for high and critical findings
+- Backend-free `terraform init` and `terraform validate` checks for all three
+  real environments: `dev`, `test`, and `prod`
 - Optional SonarCloud analysis when the repository variable `SONAR_ORGANIZATION`,
   repository variable `SONAR_PROJECT_KEY`, and secret `SONAR_TOKEN` are configured
 - Manual environment plans for dev, test, and prod using OIDC
@@ -178,7 +180,9 @@ GitHub Actions provides:
 - Concurrency groups that cancel superseded plans and prevent overlapping applies
 - Manual environment selection for dev, test, and prod
 - An apply workflow that downloads and applies the exact saved plan artifact
-- Entra federation restricted to the repository's main branch
+- Separate manual destroy-plan and destroy-apply workflows using reviewed artifacts
+- Typed `DESTROY` confirmation for destructive operations
+- Entra federation configured for the GitHub environments used by each workflow
 - Separate state access through `Storage Blob Data Contributor`
 
 Manual apply confirmation is implemented through the required `APPLY` or `CANCEL`
@@ -188,6 +192,10 @@ Private repositories require an Enterprise plan for GitHub-enforced environment 
 The apply workflow should be run only with the environment, plan run ID, and exact source
 commit that were reviewed. It verifies the commit recorded in the plan artifact before
 applying and never generates a new plan during apply.
+
+Destroy is never triggered by a push or pull request. The destroy process requires a
+successful manual destroy plan, review of its saved artifact, the matching plan run ID
+and source commit, and an explicit `DESTROY` confirmation in the destroy-apply workflow.
 
 The repository should not be presented as having independently approval-gated production
 deployment. That remains pending an Enterprise plan or a repository visibility/configuration
