@@ -93,14 +93,17 @@ The `ahcps` suffix makes the storage account names globally unique while preserv
 
 ## Backend Protection
 
-All three Terraform state storage accounts use Azure Blob Storage with:
+The backend bootstrap script configures the following settings:
 
-- HTTPS-only access and TLS 1.2
+- StorageV2 account
+- Standard LRS redundancy
+- HTTPS and TLS 1.2
 - Blob public access disabled
-- Blob versioning enabled
-- Blob soft delete enabled for 30 days
-- Container soft delete enabled for 30 days
-- Change feed enabled
+- Dedicated `tfstate` container
+
+For production use, enable and verify Blob versioning, blob soft delete, container soft
+delete, and change feed on each state storage account.
+
 Authenticate to Azure in PowerShell:
 
 ```powershell
@@ -108,16 +111,31 @@ Connect-AzAccount
 az login
 ```
 
-Create backend storage when setting up a new environment:
+Create backend storage separately for each environment:
 
 ```powershell
-.\scripts\Bootstrap-Backend.ps1 -Suffix <suffix>
+.\scripts\Bootstrap-Backend.ps1 -Suffix dev01ahcps -Environment dev
+.\scripts\Bootstrap-Backend.ps1 -Suffix test01ahcps -Environment test
+.\scripts\Bootstrap-Backend.ps1 -Suffix prod03ahcps -Environment prod
+```
 
-Deploy one environment at a time. Start with `dev`, then promote through `test` and `prod` after reviewing each plan:
+Deploy one environment at a time, starting with `dev` and reviewing each plan:
+
 ```powershell
+Set-Location .\environments\dev
 Copy-Item terraform.tfvars.example terraform.tfvars
+terraform init -reconfigure
+terraform validate
+terraform plan
+terraform apply
+```
 
-The repository has passed formatting, initialization, validation, and plan checks for the real environments. The local commands are:
+Use the corresponding environment directory for `test` or `prod`. Never run an apply
+from the wrong environment directory, and never commit `terraform.tfvars`, state files,
+credentials, or storage keys.
+
+The repository has passed formatting, initialization, validation, and plan checks for the
+real environments. The local commands are:
 
 ```powershell
 terraform fmt -check -recursive
