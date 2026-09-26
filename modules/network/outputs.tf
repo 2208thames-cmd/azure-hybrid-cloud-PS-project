@@ -3,6 +3,21 @@ output "hub_id" {
   value       = azurerm_virtual_hub.main.id
 }
 
+output "virtual_wan_id" {
+  description = "ID of the Virtual WAN"
+  value       = azurerm_virtual_wan.main.id
+}
+
+output "vpn_gateway_id" {
+  description = "ID of the site-to-site VPN gateway when enabled"
+  value       = try(azurerm_vpn_gateway.main[0].id, null)
+}
+
+output "p2s_vpn_gateway_id" {
+  description = "ID of the point-to-site VPN gateway when enabled"
+  value       = try(azurerm_point_to_site_vpn_gateway.main[0].id, null)
+}
+
 output "app_spoke_vnet_id" {
   value = azurerm_virtual_network.app_spoke.id
 }

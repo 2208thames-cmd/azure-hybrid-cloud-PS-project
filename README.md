@@ -60,7 +60,7 @@ azure-hybrid-cloud-project/
 │   ├── backup/                   # Recovery Services vault and VM policy
 │   ├── governance/               # Audit-only environment tag policy
 │   ├── identity/                 # User-assigned managed identity
-│   ├── monitoring/               # Log Analytics workspace
+│   ├── monitoring/               # Log Analytics workspace and network diagnostics
 │   └── network/                  # Virtual WAN, hub, spokes, VPN, and NSGs
 ├── scripts/
 │   └── Bootstrap-Backend.ps1     # Creates Azure Terraform state storage
@@ -220,7 +220,7 @@ See [docs/troubleshooting.md](docs/troubleshooting.md) for Azure VPN Client diag
 - Restrict backend network access after all required identities are known
 - Enable GitHub-enforced branch and environment approval gates for production apply after
   upgrading to a paid GitHub plan or changing repository visibility/configuration
-- Add diagnostic settings and alert rules to the monitoring module
+- Add alert rules to the monitoring module
 - Add VM backup association when a protected VM exists
 - Add CAF and Well-Architected Framework mapping
 - Add a finalized Draw.io architecture diagram

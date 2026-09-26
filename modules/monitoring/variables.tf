@@ -29,3 +29,9 @@ variable "retention_in_days" {
   type        = number
   default     = 30
 }
+
+variable "diagnostic_resource_ids" {
+  description = "Azure resource IDs to send platform diagnostics to this workspace"
+  type        = map(string)
+  default     = {}
+}
