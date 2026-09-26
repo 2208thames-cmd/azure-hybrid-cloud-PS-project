@@ -42,7 +42,6 @@ The network, VPN control plane, environment isolation, Terraform validation, and
 azure-hybrid-cloud-project/
 ├── .github/
 │   └── workflows/
-│       ├── terraform-demo.yml
 │       ├── terraform-quality.yml
 │       ├── terraform-plan.yml
 │       └── terraform-apply.yml
