@@ -1,8 +1,16 @@
-# Azure Virtual WAN Hybrid Cloud Architecture
+# ☁️ Enterprise Azure Hybrid Cloud Platform
 
-A Terraform-managed Azure hub-and-spoke environment with Virtual WAN, Entra ID-authenticated point-to-site VPN, isolated environments, protected remote state, and documented validation procedures.
+Production-Style Azure Networking & Infrastructure Automation with Terraform
 
-## Architecture Diagram
+![Azure Cloud](https://img.shields.io/badge/Azure-Cloud-0078D4?logo=microsoftazure&logoColor=white) ![Terraform IaC](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white) ![Virtual WAN Networking](https://img.shields.io/badge/Virtual_WAN-Networking-0078D4) ![Entra ID Identity](https://img.shields.io/badge/Entra_ID-Identity-0078D4?logo=microsoftazure&logoColor=white) ![P2S VPN Secure Access](https://img.shields.io/badge/P2S_VPN-Secure_Access-008272) ![NSGs Network Security](https://img.shields.io/badge/NSGs-Network_Security-0078D4) ![Private Endpoints Private Networking](https://img.shields.io/badge/Private_Endpoints-Private_Networking-008272)<br>
+![Azure Blob Storage Remote State](https://img.shields.io/badge/Azure_Blob_Storage-Remote_State-0078D4?logo=microsoftazure&logoColor=white) ![Azure RBAC Access Control](https://img.shields.io/badge/Azure_RBAC-Access_Control-0078D4) ![GitHub Actions CI/CD](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-2088FF?logo=githubactions&logoColor=white) ![OIDC Keyless Auth](https://img.shields.io/badge/OIDC-Keyless_Auth-6B4FBB) ![TFLint Validation](https://img.shields.io/badge/TFLint-Validation-5C4EE5) ![Checkov IaC Security](https://img.shields.io/badge/Checkov-IaC_Security-6B4FBB)<br>
+![Trivy Security Scanning](https://img.shields.io/badge/Trivy-Security%20Scanning-1904DA?logo=aqua) ![PowerShell Automation](https://img.shields.io/badge/PowerShell-Automation-5391FE?logo=powershell&logoColor=white)
+
+> An enterprise-style Azure hybrid cloud platform demonstrating secure networking, infrastructure-as-code, identity-driven access, environment isolation, remote state management, CI/CD automation, security scanning, and operational troubleshooting.
+
+---
+
+## 🗺️ Architecture Diagram
 
 ```mermaid
 flowchart LR
@@ -68,16 +76,122 @@ azure-hybrid-cloud-project/
 └── README.md
 ```
 
-## Prerequisites
+## Getting Started
 
-- Azure subscription with permission to create the listed resources
-- PowerShell 7+ (`pwsh`)
-- Terraform CLI 1.7 or later
-- Azure PowerShell `Az` module for backend bootstrap:
-  `Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force`
-- Azure CLI for Entra-authenticated local Terraform state access
-- Microsoft Entra ID account
-- Azure VPN Client for P2S testing on Windows
+Choose the path that matches what you want to do:
+
+| Path | Purpose | Terraform state | Best for |
+|---|---|---|---|
+| Demo | Inspect and validate the Terraform configuration | Local | Recruiters and reviewers |
+| Azure environments | Plan or deploy the full platform | Azure Blob Storage | Engineers and real deployments |
+
+### Option 1: Quick Demo
+
+The demo is the fastest way to review the Terraform without configuring Azure remote state.
+
+Prerequisites: Terraform CLI 1.7 or later, Git, and PowerShell 7+ (`pwsh`).
+
+Verify the tools:
+
+```powershell
+terraform version
+git --version
+pwsh --version
+```
+
+```powershell
+git clone <REPOSITORY_URL>
+cd azure-hybrid-cloud-project
+cd demo
+terraform init
+terraform validate
+```
+
+To generate a plan, configure Azure CLI authentication and an Azure subscription first. The demo uses local Terraform state and does not require Azure Blob Storage authentication or remote-state RBAC, but the Azure provider still contacts Azure during planning:
+
+```powershell
+terraform plan
+```
+
+Do not run `terraform apply` or `terraform destroy` against another person's subscription.
+
+### Option 2: Deploy an Azure Environment
+
+Prerequisites: an Azure subscription, Azure CLI, Terraform CLI 1.7 or later, PowerShell 7+, and permission to create the platform resources. Backend bootstrap additionally requires the Azure PowerShell `Az` module:
+
+```powershell
+az version
+terraform version
+pwsh --version
+Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
+```
+
+1. **Authenticate and select the subscription.** Terraform uses Azure CLI authentication for the configured Blob backend. The bootstrap script uses the separate Azure PowerShell sign-in context.
+
+  ```powershell
+  az login
+  az account show
+  Connect-AzAccount
+  ```
+
+  If you have multiple subscriptions, select the intended one in both contexts before continuing:
+
+  ```powershell
+  az account set --subscription "<SUBSCRIPTION_ID>"
+  Set-AzContext -Subscription "<SUBSCRIPTION_ID>"
+  ```
+
+2. **Prepare remote state before initializing Terraform.** The environment backends are configured for separate storage accounts and state keys. The bootstrap script creates a resource group, storage account, and `tfstate` container; it does not grant Blob data permissions or edit Terraform backend files. Run it from the repository root for each backend that needs to be created:
+
+  ```powershell
+  .\scripts\Bootstrap-Backend.ps1 -Suffix dev01ahcps -Environment dev
+  .\scripts\Bootstrap-Backend.ps1 -Suffix test01ahcps -Environment test
+  .\scripts\Bootstrap-Backend.ps1 -Suffix prod03ahcps -Environment prod
+  ```
+
+  These suffixes match the backend names documented below. The script is safe to rerun for existing resources. If you use different names, update the corresponding `backend.tf` values to match before running `terraform init`.
+
+  The identity running Terraform also needs the `Storage Blob Data Contributor` role on the state storage account or container. Bootstrap does not assign this role; arrange the assignment separately and allow time for it to take effect.
+
+3. **Initialize and validate development.**
+
+  ```powershell
+  cd environments/dev
+  terraform init
+  terraform validate
+  terraform plan
+  ```
+
+  Review the plan carefully before applying:
+
+  ```powershell
+  terraform apply
+  ```
+
+4. **Plan test independently.** Test has its own configuration and remote state:
+
+  ```powershell
+  cd ../test
+  terraform init
+  terraform validate
+  terraform plan
+  ```
+
+5. **Use the controlled workflow for production.** Production is intentionally separated from dev and test. Use the repository's GitHub Actions workflow rather than treating prod as an unrestricted local deployment. The current repository does not have GitHub-enforced environment reviewer approvals enabled; see [CI/CD](#cicd) for the existing safeguards and limitations.
+
+#### Remote State Troubleshooting
+
+Successfully authenticating to Azure does not automatically grant Terraform permission to access Blob data. Azure separates management-plane access to resources from data-plane access to blobs, and the remote backend requires the latter.
+
+| Error | Meaning | Typical cause |
+|---|---|---|
+| `401 Unauthorized` | Authentication failed | Missing or invalid authentication |
+| `403 AuthorizationPermissionMismatch` | Identity authenticated but lacks data access | Missing Blob data role or role assignment not yet effective |
+| `404 Resource Not Found` | Backend resource could not be found | Wrong subscription, resource group, storage account, container, or state key |
+
+Before troubleshooting Terraform itself, verify the active subscription and every backend value. Local development commonly uses Azure CLI authentication; GitHub Actions uses GitHub OIDC through Microsoft Entra ID. These are separate authentication workflows.
+
+The project's core operational lessons are that management-plane access is not Blob data-plane access, authentication is not authorization, and backend configuration must match real resources. Separate state, repeatable bootstrap, environment isolation, validation, and CI/CD help make infrastructure changes reproducible.
 
 ## Environment and State Design
 
