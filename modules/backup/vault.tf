@@ -4,7 +4,6 @@ resource "azurerm_recovery_services_vault" "main" {
   resource_group_name = var.resource_group_name
   sku                 = "Standard"
   storage_mode_type   = "GeoRedundant"
-  soft_delete_enabled = true
   tags                = var.tags
 }
 

@@ -85,6 +85,18 @@ Choose the path that matches what you want to do:
 | Demo | Inspect and validate the Terraform configuration | Local | Recruiters and reviewers |
 | Azure environments | Plan or deploy the full platform | Azure Blob Storage | Engineers and real deployments |
 
+### Version Requirements
+
+Terraform and provider version constraints are declared throughout the root configurations and reusable modules:
+
+| Component | Constraint | Applies to |
+|---|---|---|
+| Terraform CLI | `>= 1.7.0` | All root configurations and modules |
+| AzureRM provider | `~> 5.4.0` | Demo, Azure environments, and modules |
+| AzureAD provider | `~> 2.53` | Dev, test, and prod environments |
+
+The demo and each Azure environment include a committed `.terraform.lock.hcl` file recording the selected provider versions and checksums. `terraform init` uses those locked selections. Run `terraform init -upgrade` only when intentionally updating providers, and commit the resulting lockfile changes.
+
 ### Option 1: Quick Demo
 
 The demo is the fastest way to review the Terraform without configuring Azure remote state.
@@ -192,6 +204,22 @@ Successfully authenticating to Azure does not automatically grant Terraform perm
 Before troubleshooting Terraform itself, verify the active subscription and every backend value. Local development commonly uses Azure CLI authentication; GitHub Actions uses GitHub OIDC through Microsoft Entra ID. These are separate authentication workflows.
 
 The project's core operational lessons are that management-plane access is not Blob data-plane access, authentication is not authorization, and backend configuration must match real resources. Separate state, repeatable bootstrap, environment isolation, validation, and CI/CD help make infrastructure changes reproducible.
+
+## Change Record (2026-09-27)
+
+| Area | Change | Reason |
+|---|---|---|
+| README and onboarding | Added a project overview, security/tool badges, and separate demo and Azure deployment instructions. | Help reviewers distinguish local configuration validation from a deployment that requires Azure access, remote state, and Blob data permissions. |
+| Terraform versions | Changed the AzureRM constraint from `~> 3.100` to `~> 5.4.0` in all root configurations and reusable modules; refreshed the four committed provider lockfiles to select `5.4.0`. | The old constraint allowed only AzureRM 3.x, including the locked `3.117.1`, and excluded the intended 5.4 provider release. |
+| Diagnostic settings | Updated the metric block to `enabled_metric` and retained `azurerm_monitor_diagnostic_setting`. | AzureRM 5.4 supports the diagnostic-setting resource but expects the `enabled_metric` block in its schema. |
+| Recovery Services vault | Removed the unsupported `soft_delete_enabled` argument. | The AzureRM 5.4 vault resource schema no longer accepts that argument. |
+| Version documentation | Documented Terraform and provider constraints and the purpose of committed lockfiles. | Make the supported version ranges and repeatable provider selections clear to contributors. |
+
+### Validation and Independent Testing
+
+The `demo`, `dev`, `test`, and `prod` configurations were initialized with `terraform init -backend=false -upgrade` and passed `terraform validate` using AzureRM `5.4.0`. No Azure-backed plan or apply was run as part of this validation.
+
+A colleague is independently testing the updated configuration against their own Terraform state. This is a separate validation effort; their test results are pending and are not represented here as completed.
 
 ## Environment and State Design
 
